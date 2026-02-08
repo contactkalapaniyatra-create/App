@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Code Zing AI Chatbot</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="chatbot">
+  <div class="header">🤖 Code Zing AI</div>
+  <div class="messages" id="chat"></div>
+
+  <div class="input-area">
+    <input type="text" id="input" placeholder="Ask me anything...">
+    <button onclick="send()">Send</button>
+  </div>
+</div>
+
+<script src="commands.js"></script>
+<script src="autocorrect.js"></script>
+
+<script>
+const chat = document.getElementById("chat");
+
+function addMessage(text, type){
+
+  const div = document.createElement("div");
+  div.className = "msg " + type;
+
+  if(type === "bot"){
+
+    const btn = document.createElement("button");
+    btn.innerText = "Copy";
+    btn.className = "copy-btn";
+
+    btn.onclick = () => {
+      navigator.clipboard.writeText(text);
+      btn.innerText = "Copied!";
+      setTimeout(() => btn.innerText = "Copy", 1000);
+    };
+
+    const msgText = document.createElement("div");
+    msgText.innerText = text;
+
+    div.appendChild(btn);
+    div.appendChild(msgText);
+
+  } else {
+    div.innerText = text;
+  }
+
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function similarity(a,b){
+  let same=0;
+  for(let c of a) if(b.includes(c)) same++;
+  return same/Math.max(a.length,b.length);
+}
+
+function showHelp(){
+  return "💡 Try typing: html, css, javascript, error, price";
+}
+
+function botReply(text){
+
+  text=text.toLowerCase().trim();
+
+  if(text==="")
+    return "😅 You didn't type anything. "+showHelp();
+
+  if(text.length<2)
+    return "🤔 Please type a full word or question.";
+
+  for(let item of autocorrect){
+    if(item.wrong.includes(text)){
+      addMessage(`I fixed "${text}" to "${item.correct}"`,"bot");
+      return commands[item.correct] || "❌ No response found.";
+    }
+  }
+
+  for(let key in commands){
+    if(text.includes(key)) return commands[key];
+  }
+
+  for(let key in commands){
+    if(similarity(text,key)>0.6){
+      addMessage(`Did you mean "${key}"?`,"bot");
+      return commands[key];
+    }
+  }
+
+  return "❌ I don't understand. "+showHelp();
+}
+
+function send(){
+
+  const input=document.getElementById("input");
+  const text=input.value;
+
+  addMessage(text || "(empty)", "user");
+  input.value="";
+
+  setTimeout(()=>{
+    const reply = botReply(text);
+    addMessage(reply,"bot");
+  },400);
+}
+
+setTimeout(()=>{
+  addMessage("Tip: You can ask me about HTML, CSS, JavaScript or errors 👇","bot");
+},3000);
+
+addMessage("Hi! I'm your AI assistant 🤖","bot");
+
+</script>
+
+</body>
+</html>
