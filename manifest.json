@@ -1,7 +1,7 @@
 {
   "name": "WebZy",
   "short_name": "WebZy",
-  "start_url": "/index.html",
+  "start_url": "/App",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#000000",
