@@ -120,8 +120,13 @@ setTimeout(()=>{
 addMessage("Hi! I'm your AI assistant 🤖","bot");
 
 </script>
-
+<script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("service-worker.js");
+}
+</script>
 </body>
 
 </html>
+
 
